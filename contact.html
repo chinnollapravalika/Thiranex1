@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Contact Pravalika">
+    <title>Contact</title>
+</head>
+
+<body>
+
+<header>
+    <h1>Contact Me</h1>
+
+    <nav aria-label="Contact Navigation">
+        <a href="index.html">Home</a>
+    </nav>
+</header>
+
+<main>
+
+<section aria-labelledby="contact-heading">
+
+    <h2 id="contact-heading">Contact Form</h2>
+
+    <!-- Accessible Form -->
+    <form aria-label="Contact Form">
+
+        <label for="name">Full Name:</label>
+        <input
+            type="text"
+            id="name"
+            name="name"
+            required
+        >
+
+        <br><br>
+
+        <label for="email">Email:</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            required
+        >
+
+        <br><br>
+
+        <label for="message">Message:</label>
+
+        <textarea
+            id="message"
+            name="message"
+            rows="5"
+            required>
+        </textarea>
+
+        <br><br>
+
+        <button type="submit">
+            Send Message
+        </button>
+
+    </form>
+
+</section>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Pravalika</p>
+</footer>
+
+</body>
+</html>
