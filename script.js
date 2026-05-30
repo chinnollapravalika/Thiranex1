@@ -1,148 +1,79 @@
-const taskInput = document.getElementById("taskInput");
-const addBtn = document.getElementById("addBtn");
-const taskList = document.getElementById("taskList");
+const apiKey = "d857b0114590fad3c2df9f590c024c50";
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let currentFilter = "all";
+const cityInput = document.getElementById("cityInput");
+const searchBtn = document.getElementById("searchBtn");
 
-function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
+const cityName = document.getElementById("cityName");
+const temperature = document.getElementById("temperature");
+const humidity = document.getElementById("humidity");
+const windSpeed = document.getElementById("windSpeed");
+const description = document.getElementById("description");
 
-function renderTasks() {
+async function getWeather(city) {
 
-    taskList.innerHTML = "";
+    try {
 
-    let filteredTasks = tasks.filter(task => {
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+        );
 
-        if (currentFilter === "active")
-            return !task.completed;
+        const data = await response.json();
 
-        if (currentFilter === "completed")
-            return task.completed;
-
-        return true;
-    });
-
-    filteredTasks.forEach(task => {
-
-        const li = document.createElement("li");
-
-        if(task.completed){
-            li.classList.add("completed");
+        if (!response.ok) {
+            throw new Error(data.message);
         }
 
-        li.innerHTML = `
-            <span>${task.text}</span>
+        cityName.textContent =
+            `${data.name}, ${data.sys.country}`;
 
-            <div class="actions">
+        temperature.textContent =
+            `🌡 Temperature: ${data.main.temp} °C`;
 
-                <button class="complete-btn"
-                        data-id="${task.id}">
-                        ✔
-                </button>
+        humidity.textContent =
+            `💧 Humidity: ${data.main.humidity}%`;
 
-                <button class="edit-btn"
-                        data-id="${task.id}">
-                        Edit
-                </button>
+        windSpeed.textContent =
+            `🌬 Wind Speed: ${data.wind.speed} m/s`;
 
-                <button class="delete-btn"
-                        data-id="${task.id}">
-                        Delete
-                </button>
+        description.textContent =
+            `☁ Condition: ${data.weather[0].description}`;
 
-            </div>
-        `;
+    }
+    catch (error) {
 
-        taskList.appendChild(li);
-    });
+        cityName.textContent = "";
+        temperature.textContent = "";
+        humidity.textContent = "";
+        windSpeed.textContent = "";
+
+        description.textContent =
+            `❌ Error: ${error.message}`;
+    }
 }
 
-function addTask() {
+searchBtn.addEventListener("click", () => {
 
-    const text = taskInput.value.trim();
+    const city = cityInput.value.trim();
 
-    if(text === "") return;
-
-    tasks.push({
-        id: Date.now(),
-        text: text,
-        completed: false
-    });
-
-    taskInput.value = "";
-
-    saveTasks();
-    renderTasks();
-}
-
-addBtn.addEventListener("click", addTask);
-
-taskInput.addEventListener("keypress", function(e){
-
-    if(e.key === "Enter"){
-        addTask();
+    if (city !== "") {
+        getWeather(city);
+    } else {
+        description.textContent = "❌ Please enter a city name.";
     }
 
 });
 
-taskList.addEventListener("click", function(e){
+cityInput.addEventListener("keypress", (event) => {
 
-    const id = Number(e.target.dataset.id);
+    if (event.key === "Enter") {
 
-    if(e.target.classList.contains("delete-btn")){
+        const city = cityInput.value.trim();
 
-        tasks = tasks.filter(task => task.id !== id);
-
-    }
-
-    if(e.target.classList.contains("complete-btn")){
-
-        tasks = tasks.map(task => {
-
-            if(task.id === id){
-                task.completed = !task.completed;
-            }
-
-            return task;
-        });
-
-    }
-
-    if(e.target.classList.contains("edit-btn")){
-
-        const newText = prompt("Edit Task:");
-
-        if(newText){
-
-            tasks = tasks.map(task => {
-
-                if(task.id === id){
-                    task.text = newText;
-                }
-
-                return task;
-            });
+        if (city !== "") {
+            getWeather(city);
+        } else {
+            description.textContent = "❌ Please enter a city name.";
         }
     }
 
-    saveTasks();
-    renderTasks();
-
 });
-
-document.querySelectorAll(".filter-btn")
-.forEach(button => {
-
-    button.addEventListener("click", function(){
-
-        currentFilter = this.dataset.filter;
-
-        renderTasks();
-
-    });
-
-});
-
-renderTasks();
